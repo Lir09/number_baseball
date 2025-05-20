@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>간단 숫자야구 게임</title>
+<title>숫자야구 게임 (3자리, 4자리 선택 가능)</title>
 <style>
   body {
     background: #121212;
@@ -19,13 +19,26 @@
     background: #1f1f1f;
     padding: 20px 30px;
     border-radius: 12px;
-    width: 320px;
+    width: 350px;
     box-shadow: 0 0 10px #00ffccaa;
   }
   h1 {
     text-align: center;
     margin-bottom: 15px;
     color: #00ffcc;
+  }
+  label, select {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+  }
+  select {
+    width: 100%;
+    padding: 6px;
+    border-radius: 8px;
+    border: none;
+    background: #222;
+    color: #eee;
   }
   input[type="text"] {
     width: 100%;
@@ -36,7 +49,7 @@
     margin-bottom: 15px;
     box-sizing: border-box;
     text-align: center;
-    letter-spacing: 8px;
+    letter-spacing: 10px;
     background: #222;
     color: #eee;
   }
@@ -97,55 +110,59 @@
 <body>
   <div id="game">
     <h1>숫자야구 게임</h1>
-    <input id="guessInput" type="text" maxlength="3" placeholder="서로 다른 3자리 숫자 입력" autofocus />
-    <button id="submitBtn">결과 확인</button>
+    <label for="digitSelect">자리수 선택</label>
+    <select id="digitSelect">
+      <option value="3" selected>3자리</option>
+      <option value="4">4자리</option>
+    </select>
+
+    <input id="guessInput" type="text" maxlength="3" placeholder="서로 다른 숫자 입력" autofocus disabled />
+    <button id="submitBtn" disabled>결과 확인</button>
+
     <div id="log"></div>
     <button id="resetBtn" style="display:none;">다시 시작</button>
-    <small>0~9 중복 없는 3자리 숫자를 맞춰보세요!</small>
+    <small>0~9 중복 없는 숫자를 맞춰보세요!</small>
   </div>
 
 <script>
-  // 정답 생성 함수 (중복 없는 3자리 숫자)
-  function generateAnswer() {
+  let answer = [];
+  let digitCount = 3;
+
+  const digitSelect = document.getElementById('digitSelect');
+  const input = document.getElementById('guessInput');
+  const submitBtn = document.getElementById('submitBtn');
+  const log = document.getElementById('log');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function generateAnswer(digit) {
     const digits = [];
-    while (digits.length < 3) {
+    while (digits.length < digit) {
       const n = Math.floor(Math.random() * 10);
       if (!digits.includes(n)) digits.push(n);
     }
     return digits;
   }
 
-  // 입력값 유효성 검사
-  function isValidGuess(guess) {
-    if (guess.length !== 3) return false;
-    if (!/^\d{3}$/.test(guess)) return false;
+  function isValidGuess(guess, digit) {
+    if (guess.length !== digit) return false;
+    if (!new RegExp(`^\\d{${digit}}$`).test(guess)) return false;
     const digits = guess.split('');
     const uniqueDigits = new Set(digits);
-    return uniqueDigits.size === 3;
+    return uniqueDigits.size === digit;
   }
 
-  // 결과 계산 함수
   function checkGuess(answer, guess) {
     let strike = 0, ball = 0;
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < answer.length; i++) {
       if (guess[i] === answer[i]) {
         strike++;
       } else if (answer.includes(guess[i])) {
         ball++;
       }
     }
-    let out = 3 - strike - ball;
+    let out = answer.length - strike - ball;
     return { strike, ball, out };
   }
-
-  // 초기화
-  const answer = generateAnswer();
-  //console.log("정답:", answer.join('')); // 디버깅용
-
-  const input = document.getElementById('guessInput');
-  const submitBtn = document.getElementById('submitBtn');
-  const log = document.getElementById('log');
-  const resetBtn = document.getElementById('resetBtn');
 
   function addLog(message, className) {
     const div = document.createElement('div');
@@ -160,16 +177,34 @@
     submitBtn.disabled = true;
     resetBtn.style.display = 'block';
     if(success){
-      addLog('🎉 정답입니다! 축하합니다! 🎉', 'strike');
+      addLog(`🎉 정답입니다! 축하합니다! 🎉`, 'strike');
     } else {
-      addLog('게임이 종료되었습니다.', 'out');
+      addLog(`게임이 종료되었습니다.`, 'out');
     }
   }
 
+  function startGame() {
+    digitCount = Number(digitSelect.value);
+    answer = generateAnswer(digitCount);
+    //console.log("정답:", answer.join('')); // 디버깅용
+    input.value = '';
+    input.disabled = false;
+    submitBtn.disabled = false;
+    resetBtn.style.display = 'none';
+    input.maxLength = digitCount;
+    input.placeholder = `서로 다른 ${digitCount}자리 숫자 입력`;
+    log.innerHTML = '';
+    input.focus();
+  }
+
+  digitSelect.addEventListener('change', () => {
+    startGame();
+  });
+
   submitBtn.addEventListener('click', () => {
     const guess = input.value.trim();
-    if (!isValidGuess(guess)) {
-      alert('서로 다른 3자리 숫자를 입력해주세요!');
+    if (!isValidGuess(guess, digitCount)) {
+      alert(`서로 다른 ${digitCount}자리 숫자를 입력해주세요!`);
       input.value = '';
       input.focus();
       return;
@@ -178,7 +213,7 @@
     const result = checkGuess(answer, guess.split(''));
     addLog(`입력: ${guess} → 스트라이크: ${result.strike}, 볼: ${result.ball}, 아웃: ${result.out}`);
 
-    if (result.strike === 3) {
+    if (result.strike === digitCount) {
       endGame(true);
     } else {
       input.value = '';
@@ -187,7 +222,7 @@
   });
 
   resetBtn.addEventListener('click', () => {
-    location.reload();
+    startGame();
   });
 
   input.addEventListener('keydown', e => {
@@ -195,6 +230,10 @@
       submitBtn.click();
     }
   });
+
+  // 게임 시작
+  startGame();
+
 </script>
 </body>
 </html>
