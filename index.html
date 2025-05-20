@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>간단 숫자야구 게임</title>
+<style>
+  body {
+    background: #121212;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    padding-top: 50px;
+  }
+  #game {
+    background: #1f1f1f;
+    padding: 20px 30px;
+    border-radius: 12px;
+    width: 320px;
+    box-shadow: 0 0 10px #00ffccaa;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #00ffcc;
+  }
+  input[type="text"] {
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    text-align: center;
+    letter-spacing: 8px;
+    background: #222;
+    color: #eee;
+  }
+  button {
+    width: 100%;
+    padding: 10px;
+    background: #00ffcc;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #121212;
+    font-size: 1.1rem;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #00cca9;
+  }
+  #log {
+    margin-top: 20px;
+    max-height: 250px;
+    overflow-y: auto;
+    font-size: 1rem;
+  }
+  .log-item {
+    padding: 6px 10px;
+    border-bottom: 1px solid #333;
+  }
+  .strike {
+    color: #4caf50;
+    font-weight: bold;
+  }
+  .ball {
+    color: #ff9800;
+    font-weight: bold;
+  }
+  .out {
+    color: #f44336;
+    font-weight: bold;
+  }
+  #resetBtn {
+    margin-top: 10px;
+    background: #f44336;
+    color: white;
+    font-weight: normal;
+  }
+  #resetBtn:hover {
+    background: #d32f2f;
+  }
+  small {
+    display: block;
+    margin-top: 10px;
+    color: #999;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div id="game">
+    <h1>숫자야구 게임</h1>
+    <input id="guessInput" type="text" maxlength="3" placeholder="서로 다른 3자리 숫자 입력" autofocus />
+    <button id="submitBtn">결과 확인</button>
+    <div id="log"></div>
+    <button id="resetBtn" style="display:none;">다시 시작</button>
+    <small>0~9 중복 없는 3자리 숫자를 맞춰보세요!</small>
+  </div>
+
+<script>
+  // 정답 생성 함수 (중복 없는 3자리 숫자)
+  function generateAnswer() {
+    const digits = [];
+    while (digits.length < 3) {
+      const n = Math.floor(Math.random() * 10);
+      if (!digits.includes(n)) digits.push(n);
+    }
+    return digits;
+  }
+
+  // 입력값 유효성 검사
+  function isValidGuess(guess) {
+    if (guess.length !== 3) return false;
+    if (!/^\d{3}$/.test(guess)) return false;
+    const digits = guess.split('');
+    const uniqueDigits = new Set(digits);
+    return uniqueDigits.size === 3;
+  }
+
+  // 결과 계산 함수
+  function checkGuess(answer, guess) {
+    let strike = 0, ball = 0;
+    for (let i = 0; i < 3; i++) {
+      if (guess[i] === answer[i]) {
+        strike++;
+      } else if (answer.includes(guess[i])) {
+        ball++;
+      }
+    }
+    let out = 3 - strike - ball;
+    return { strike, ball, out };
+  }
+
+  // 초기화
+  const answer = generateAnswer();
+  //console.log("정답:", answer.join('')); // 디버깅용
+
+  const input = document.getElementById('guessInput');
+  const submitBtn = document.getElementById('submitBtn');
+  const log = document.getElementById('log');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function addLog(message, className) {
+    const div = document.createElement('div');
+    div.classList.add('log-item');
+    if (className) div.classList.add(className);
+    div.textContent = message;
+    log.prepend(div);
+  }
+
+  function endGame(success) {
+    input.disabled = true;
+    submitBtn.disabled = true;
+    resetBtn.style.display = 'block';
+    if(success){
+      addLog('🎉 정답입니다! 축하합니다! 🎉', 'strike');
+    } else {
+      addLog('게임이 종료되었습니다.', 'out');
+    }
+  }
+
+  submitBtn.addEventListener('click', () => {
+    const guess = input.value.trim();
+    if (!isValidGuess(guess)) {
+      alert('서로 다른 3자리 숫자를 입력해주세요!');
+      input.value = '';
+      input.focus();
+      return;
+    }
+
+    const result = checkGuess(answer, guess.split(''));
+    addLog(`입력: ${guess} → 스트라이크: ${result.strike}, 볼: ${result.ball}, 아웃: ${result.out}`);
+
+    if (result.strike === 3) {
+      endGame(true);
+    } else {
+      input.value = '';
+      input.focus();
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    location.reload();
+  });
+
+  input.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){
+      submitBtn.click();
+    }
+  });
+</script>
+</body>
+</html>
