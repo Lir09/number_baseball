@@ -3,695 +3,722 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마인크래프트 무협 플러그인 완벽 가이드</title>
+    <title>대신 매점 - 온라인 쇼핑몰</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #2c3e50;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: 'Noto Sans KR', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
         }
-
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-
-        header {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 2rem 0;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .header-title {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, #ffd700, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .header-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 1rem;
-        }
-
-        nav {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-links {
+        
+        .header-content {
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 2rem;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #2c3e50;
-            font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        main {
-            padding: 3rem 0;
-        }
-
-        .section {
-            background: rgba(255, 255, 255, 0.95);
-            margin: 2rem 0;
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s ease;
-        }
-
-        .section:hover {
-            transform: translateY(-5px);
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 3px solid #667eea;
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: linear-gradient(45deg, #ffd700, #ff6b6b);
-        }
-
-        .subsection {
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
-            border-radius: 15px;
-            border-left: 5px solid #667eea;
-        }
-
-        .subsection-title {
-            font-size: 1.5rem;
-            color: #34495e;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            border-color: #667eea;
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
-        }
-
-        .feature-card h4 {
-            color: #667eea;
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-        }
-
-        .stat-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-table th,
-        .stat-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e0e6ed;
-        }
-
-        .stat-table th {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            font-weight: 600;
-        }
-
-        .stat-table tr:hover {
-            background: #f8f9ff;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: #e0e6ed;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 0.5rem 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
-
-        .level-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .level-list li {
-            background: white;
-            margin: 0.5rem 0;
-            padding: 1rem;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .level-list li:hover {
-            transform: translateX(10px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-        }
-
-        .level-number {
+        
+        .logo {
+            font-size: 28px;
             font-weight: bold;
-            color: #667eea;
-            margin-right: 1rem;
-        }
-
-        .highlight {
-            background: linear-gradient(45deg, #ffd700, #ff6b6b);
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 5px;
-            font-weight: 600;
-        }
-
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 1rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-        }
-
-        .info {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
-            padding: 1rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.8rem 2rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             text-decoration: none;
+        }
+        
+        .cart-icon {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
             border-radius: 25px;
-            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
-            border: none;
+        }
+        
+        .cart-icon:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .section-content {
+            padding: 2rem;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .product-card {
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
-
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f1f3f4, #e8eaed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #666;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2d3436;
+        }
+        
+        .product-price {
+            font-size: 1.3rem;
+            color: #e17055;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(232, 67, 147, 0.4);
         }
-
-        footer {
-            background: rgba(0, 0, 0, 0.8);
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.4);
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-total {
+            background: linear-gradient(135deg, #55a3ff 0%, #003d82 100%);
             color: white;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border-radius: 10px;
             text-align: center;
-            padding: 2rem 0;
-            margin-top: 3rem;
+            font-size: 1.2rem;
+            font-weight: bold;
         }
-
+        
+        .order-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2d3436;
+        }
+        
+        .form-input {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 3px rgba(116, 185, 255, 0.1);
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .payment-method {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method:hover {
+            border-color: #74b9ff;
+            background: #f8f9ff;
+        }
+        
+        .payment-method.selected {
+            border-color: #0984e3;
+            background: #e3f2ff;
+        }
+        
+        .upload-area {
+            border: 2px dashed #74b9ff;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            background: #e3f2ff;
+            border-color: #0984e3;
+        }
+        
+        .upload-area.dragover {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .success-message {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 1rem;
+            animation: successPulse 0.5s ease;
+        }
+        
+        @keyframes successPulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .bank-info {
+            background: #f8f9fa;
+            border-left: 4px solid #74b9ff;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
         @media (max-width: 768px) {
-            .header-title {
-                font-size: 2rem;
+            .products-grid {
+                grid-template-columns: 1fr;
             }
             
-            .nav-links {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .section {
-                padding: 1.5rem;
-            }
-            
-            .feature-grid {
+            .payment-methods {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <header>
+    <header class="header">
         <div class="container">
-            <h1 class="header-title">⚔️ 무협 플러그인 ⚔️</h1>
-            <p class="header-subtitle">마인크래프트에서 펼쳐지는 진정한 무협의 세계</p>
-            <p>검기와 강기가 춤추는 강호에서 당신만의 전설을 써내려가세요</p>
+            <div class="header-content">
+                <a href="#" class="logo">🛒 대신 매점</a>
+                <div class="cart-icon" onclick="showCart()">
+                    🛍️ 장바구니 (<span id="cart-count">0</span>)
+                </div>
+            </div>
         </div>
     </header>
 
-    <nav>
+    <main class="main-content">
         <div class="container">
-            <div class="nav-links">
-                <a href="#sect1">문파 & 세가</a>
-                <a href="#sect2">무공 시스템</a>
-                <a href="#sect3">내공 & 경지</a>
-                <a href="#sect4">영약 시스템</a>
-                <a href="#sect5">장비 & 성장</a>
-                <a href="#sect6">경제 & 퀘스트</a>
-                <a href="#sect7">보스 몬스터</a>
-                <a href="#sect8">깨달음</a>
-            </div>
-        </div>
-    </nav>
-
-    <main>
-        <div class="container">
-            <!-- 문파 & 세가 시스템 -->
-            <section id="sect1" class="section">
-                <h2 class="section-title">🏯 문파 & 세가 시스템</h2>
-                
-                <div class="subsection">
-                    <h3 class="subsection-title">🎯 문파 시스템</h3>
-                    <div class="info">
-                        <strong>시작 시 선택 가능</strong> - 선택을 미룰 수도 있으며, 언제든 탈퇴 가능합니다.
+            <!-- 상품 목록 섹션 -->
+            <div id="products-section" class="section">
+                <div class="section-header">
+                    🔥 인기 상품
+                </div>
+                <div class="section-content">
+                    <div class="products-grid" id="products-grid">
+                        <!-- 상품들이 JavaScript로 동적 생성됩니다 -->
                     </div>
-                    
-                    <div class="feature-grid">
-                        <div class="feature-card">
-                            <h4>📜 문파 가입 혜택</h4>
-                            <ul>
-                                <li>해당 문파의 <span class="highlight">심법</span> 획득</li>
-                                <li>문파 전용 <span class="highlight">기초 무공</span> 획득</li>
-                                <li>강력한 <span class="highlight">상급 무공</span> 획득</li>
-                                <li>문파 영약 복용 시 <span class="highlight">1.25배</span> 효과 증가</li>
-                            </ul>
+                </div>
+            </div>
+
+            <!-- 장바구니 섹션 -->
+            <div id="cart-section" class="section hidden">
+                <div class="section-header">
+                    🛍️ 장바구니
+                </div>
+                <div class="section-content">
+                    <div id="cart-items"></div>
+                    <div id="cart-total" class="cart-total hidden">
+                        총 합계: <span id="total-amount">0</span>원
+                    </div>
+                    <button class="btn btn-secondary" onclick="showOrderForm()" id="order-btn" style="margin-top: 1rem; display: none;">
+                        주문하기
+                    </button>
+                    <button class="btn" onclick="showProducts()" style="margin-top: 1rem;">
+                        쇼핑 계속하기
+                    </button>
+                </div>
+            </div>
+
+            <!-- 주문 폼 섹션 -->
+            <div id="order-section" class="section hidden">
+                <div class="section-header">
+                    📝 주문 정보 입력
+                </div>
+                <div class="section-content">
+                    <form class="order-form" id="order-form">
+                        <div class="form-group">
+                            <label class="form-label">이름</label>
+                            <input type="text" class="form-input" id="customer-name" placeholder="주문자 이름을 입력하세요" required>
                         </div>
-                        
-                        <div class="feature-card">
-                            <h4>⚔️ 문파별 무공 체계</h4>
-                            <p>각 문파는 다음 무기 중 하나 이상을 전문으로 합니다:</p>
-                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
-                                <span class="highlight">검</span>
-                                <span class="highlight">권</span>
-                                <span class="highlight">창</span>
-                                <span class="highlight">장</span>
-                                <span class="highlight">봉</span>
-                                <span class="highlight">암기</span>
+                        <div class="form-group">
+                            <label class="form-label">전화번호</label>
+                            <input type="tel" class="form-input" id="customer-phone" placeholder="010-1234-5678" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">배송 반</label>
+                            <input type="text" class="form-input" id="customer-address" placeholder="상세 주소를 입력하세요" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">결제 방법 선택</label>
+                            <div class="payment-methods">
+                                <div class="payment-method" onclick="selectPayment('card')">
+                                    💳<br>신용카드(안됨)
+                                </div>
+                                <div class="payment-method selected" onclick="selectPayment('bank')">
+                                    🏦<br>계좌이체
+                                </div>
+                                <div class="payment-method" onclick="selectPayment('kakao')">
+                                    💬<br>카카오페이
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <button type="submit" class="btn">주문 완료</button>
+                    </form>
                 </div>
+            </div>
 
-                <div class="subsection">
-                    <h3 class="subsection-title">👑 오대세가 시스템</h3>
-                    <div class="warning">
-                        <strong>중요!</strong> 세가 선택 시 영구 귀속되며, 변경이나 탈퇴가 불가능합니다.
-                    </div>
-                    
-                    <table class="stat-table">
-                        <thead>
-                            <tr>
-                                <th>세가명</th>
-                                <th>대표 무공</th>
-                                <th>특징</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>제갈가</strong></td>
-                                <td>천기관검</td>
-                                <td>전략과 지혜의 명문</td>
-                            </tr>
-                            <tr>
-                                <td><strong>남궁가</strong></td>
-                                <td>천상신검</td>
-                                <td>검술의 최고봉</td>
-                            </tr>
-                            <tr>
-                                <td><strong>모용가</strong></td>
-                                <td>기연대지서</td>
-                                <td>화려한 무공의 대가</td>
-                            </tr>
-                            <tr>
-                                <td><strong>하북가</strong></td>
-                                <td>-</td>
-                                <td>북방의 강호 명문</td>
-                            </tr>
-                            <tr>
-                                <td><strong>사천당가</strong></td>
-                                <td>-</td>
-                                <td>독문의 최고 권위</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                    <div class="info">
-                        <strong>세가 + 문파 동시 소속 가능!</strong> 세가 소속과 문파 가입은 별개의 시스템입니다.
-                    </div>
+            <!-- 결제 확인 섹션 -->
+            <div id="payment-section" class="section hidden">
+                <div class="section-header">
+                    💰 계좌이체 결제 확인
                 </div>
-            </section>
-
-            <!-- 무공 시스템 -->
-            <section id="sect2" class="section">
-                <h2 class="section-title">🥋 무공 시스템</h2>
-                
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <h4>🧘 심법</h4>
-                        <p>문파나 세가의 내공 수련법으로, 내공의 질과 성장 속도를 결정합니다.</p>
+                <div class="section-content">
+                    <div class="bank-info">
+                        <h3>입금 계좌 정보</h3>
+                        <p><strong>은행:</strong> sc제일은행</p>
+                        <p><strong>계좌번호:</strong> 123456-78-901234</p>
+                        <p><strong>예금주:</strong> 김가빈</p>
+                        <p><strong>입금 금액:</strong> <span id="payment-amount">0</span>원</p>
                     </div>
                     
-                    <div class="feature-card">
-                        <h4>🎯 기초 무공</h4>
-                        <p>검, 권 등 각 무기별 입문용 무공으로 기초를 다지는 핵심 기술입니다.</p>
+                    <div class="form-group">
+                        <label class="form-label">입금자명</label>
+                        <input type="text" class="form-input" id="depositor-name" placeholder="입금하신 분의 성함을 입력하세요" required>
                     </div>
                     
-                    <div class="feature-card">
-                        <h4>⚡ 상급 무공</h4>
-                        <p>고급 스킬로서 PvP 전투와 보스전에서 핵심적인 역할을 담당합니다.</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <h4>🗡️ 무기 시스템</h4>
-                        <p>검, 권, 창, 장, 봉, 암기 등 다양한 장비 기반의 전투 스타일을 제공합니다.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 내공 & 경지 시스템 -->
-            <section id="sect3" class="section">
-                <h2 class="section-title">💫 내공 & 경지 시스템</h2>
-                
-                <div class="subsection">
-                    <h3 class="subsection-title">🔋 내공 시스템</h3>
-                    <div class="feature-grid">
-                        <div class="feature-card">
-                            <h4>⌨️ 수련 방법</h4>
-                            <p><span class="highlight">Shift</span> 키로 나무 아래 등 정해진 장소에서 수련</p>
-                            <p>시간당 성장량은 현재 경지에 비례하여 증가</p>
+                    <div class="form-group">
+                        <label class="form-label">입금 확인 증빙서류 업로드</label>
+                        <div class="upload-area" onclick="document.getElementById('receipt-upload').click()">
+                            <p>📁 클릭하여 파일을 선택하거나 드래그하여 업로드하세요</p>
+                            <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                                (JPG, PNG, PDF 파일만 업로드 가능)
+                            </p>
                         </div>
-                        
-                        <div class="feature-card">
-                            <h4>🎁 추가 획득 방법</h4>
-                            <ul>
-                                <li>보스 몬스터 처치</li>
-                                <li>영약 복용</li>
-                                <li>이벤트 보상</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="subsection">
-                    <h3 class="subsection-title">📈 경지 시스템 (총 18단계)</h3>
-                    
-                    <ol class="level-list">
-                        <li><span class="level-number">1.</span> 삼류</li>
-                        <li><span class="level-number">2.</span> 이류</li>
-                        <li><span class="level-number">3.</span> 일류 <span class="highlight">⚡ 검기 발생</span></li>
-                        <li><span class="level-number">4.</span> 절정 초입</li>
-                        <li><span class="level-number">5.</span> 절정 완숙 <span class="highlight">⏱️ 지속시간 증가, 내공 소모 감소</span></li>
-                        <li><span class="level-number">6.</span> 절정 극</li>
-                        <li><span class="level-number">7.</span> 초절정 초입 <span class="highlight">💥 강기 사용 가능</span></li>
-                        <li><span class="level-number">8.</span> 초절정 완숙</li>
-                        <li><span class="level-number">9.</span> 초절정 극</li>
-                        <li><span class="level-number">10.</span> 화경 초입 / 극마 초입</li>
-                        <li><span class="level-number">11.</span> 화경 완숙 / 극마 완숙</li>
-                        <li><span class="level-number">12.</span> 화경 극 / 극마 극</li>
-                        <li><span class="level-number">13.</span> 현경 초입 / 탈마</li>
-                        <li><span class="level-number">14.</span> 현경 완숙</li>
-                        <li><span class="level-number">15.</span> 현경 극</li>
-                        <li><span class="level-number">16.</span> 생사경</li>
-                    </ol>
-                    
-                    <div class="info">
-                        <strong>경지 감지 시스템:</strong> 자신보다 높은 경지의 상대는 기운 노출 정도에 따라 파악할 수 있습니다.
-                    </div>
-                </div>
-            </section>
-
-            <!-- 영약 시스템 -->
-            <section id="sect4" class="section">
-                <h2 class="section-title">💊 영약 시스템</h2>
-                
-                <div class="info">
-                    <strong>사용 조건:</strong> 수련, 전투, 보스 공략 시 사용 가능<br>
-                    <strong>문파 보너스:</strong> 같은 문파의 영약 사용 시 효과 1.25배 증가
-                </div>
-                
-                <table class="stat-table">
-                    <thead>
-                        <tr>
-                            <th>영약명</th>
-                            <th>효과</th>
-                            <th>특성</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>소환단</strong></td>
-                            <td>경상 회복, 체력 회복</td>
-                            <td>전투 중 빠른 회복용</td>
-                        </tr>
-                        <tr>
-                            <td><strong>대한단</strong></td>
-                            <td>중상 회복, 내상 개선</td>
-                            <td>고급 회복</td>
-                        </tr>
-                        <tr>
-                            <td><strong>소조원단</strong></td>
-                            <td>소량 내공 회복</td>
-                            <td>스킬 사용 중 회복</td>
-                        </tr>
-                        <tr>
-                            <td><strong>대조원단</strong></td>
-                            <td>대량 내공 회복, 원기 충전</td>
-                            <td>실전 전 회복</td>
-                        </tr>
-                        <tr>
-                            <td><strong>전기산</strong></td>
-                            <td>내공 기혈 회복</td>
-                            <td>내공 순환 장애 시 사용</td>
-                        </tr>
-                        <tr>
-                            <td><strong>자양단</strong></td>
-                            <td>기력 회복</td>
-                            <td>전투 전 버프용</td>
-                        </tr>
-                        <tr>
-                            <td><strong>속공산</strong></td>
-                            <td>순간 반사 신경 상승</td>
-                            <td>PvP 순간 반응 용</td>
-                        </tr>
-                        <tr>
-                            <td><strong>해독환</strong></td>
-                            <td>해독</td>
-                            <td>중독 해제</td>
-                        </tr>
-                        <tr>
-                            <td><strong>백초환</strong></td>
-                            <td>해독+폭발 해제</td>
-                            <td>독+버프 해제</td>
-                        </tr>
-                        <tr style="background: #fff3cd;">
-                            <td><strong>탈혼단</strong></td>
-                            <td>생명력 폭발</td>
-                            <td>생사를 건 전투에</td>
-                        </tr>
-                        <tr style="background: #d1ecf1;">
-                            <td><strong>천신단</strong></td>
-                            <td>회복 최상급</td>
-                            <td>고급 회복용, 고가</td>
-                        </tr>
-                        <tr style="background: #f8d7da;">
-                            <td><strong>용혈진단</strong></td>
-                            <td>전설 영약</td>
-                            <td>모든 능력 향상, 한정판</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- 장비/무기 성장 -->
-            <section id="sect5" class="section">
-                <h2 class="section-title">⚔️ 장비 & 무기 성장</h2>
-                
-                <div class="subsection">
-                    <h3 class="subsection-title">🔧 재료별 성능</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 30%"></div>
-                    </div>
-                    <p><strong>철</strong> - 기본 재료</p>
-                    
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 65%"></div>
-                    </div>
-                    <p><strong>한철</strong> - 중급 재료</p>
-                    
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 100%"></div>
-                    </div>
-                    <p><strong>운철</strong> - 최고급 재료</p>
-                </div>
-                
-                <div class="subsection">
-                    <h3 class="subsection-title">⭐ 별 시스템 (최대 10개)</h3>
-                    <div class="feature-grid">
-                        <div class="feature-card">
-                            <h4>💎 별 효과</h4>
-                            <ul>
-                                <li>내공 소모량 감소</li>
-                                <li>무공 효율 증가</li>
-                                <li>공격력 상승</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <h4>🎯 대상 장비</h4>
-                            <ul>
-                                <li>검</li>
-                                <li>권</li>
-                                <li>장갑</li>
-                                <li>기타 무기류</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 서버 경제 & 퀘스트 시스템 -->
-            <section id="sect6" class="section">
-                <h2 class="section-title">💰 경제 & 퀘스트 시스템</h2>
-                
-                <div class="subsection">
-                    <h3 class="subsection-title">📋 일일 퀘스트</h3>
-                    <div class="feature-grid">
-                        <div class="feature-card">
-                            <h4>🎲 퀘스트 시스템</h4>
-                            <ul>
-                                <li>각 문파별 최대 <span class="highlight">30종</span> 퀘스트 준비</li>
-                                <li>매일 랜덤으로 <span class="highlight">3개</span> 부여</li>
-                                <li>문파별 특색 있는 퀘스트 내용</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <h4>🎁 보상 시스템</h4>
-                            <ul>
-                                <li>화폐</li>
-                                <li>경험치</li>
-                                <li>영약</li>
-                                <li>재료</li>
-                                <li>내공</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="warning">
-                    <strong>화폐 시스템:</strong> 추후 상세 기획 예정
-                </div>
-            </section>
-
-            <!-- 보스 몬스터 시스템 -->
-            <section id="sect7" class="section">
-                <h2 class="section-title">👹 보스 몬스터 시스템</h2>
-                
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <h4>🏆 보스 처치 보상</h4>
-                        <ul>
-                            <li><span class="highlight">내공</span> 대량 획득</li>
-                            <li><span class="highlight">깨달음</span> 수치 획득</li>
-                            <li>보스 강도에 따른 차등 보상</li>
-                        </ul>
+                        <input type="file" id="receipt-upload" class="hidden" accept="image/*,.pdf" onchange="handleFileUpload(event)">
+                        <div id="upload-preview"></div>
                     </div>
                     
-                    <div class="feature-card">
-                        <h4>🎪 특별 이벤트</h4>
-                        <ul>
-                            <li>이벤트성 보스 등장</li>
-                            <li>한정 시간 도전</li>
-                            <li>특별 보상 획득 기회</li>
-                        </ul>
-                    </div>
+                    <button class="btn" onclick="confirmPayment()">결제 확인 완료</button>
+                    <button class="btn btn-secondary" onclick="showOrderForm()" style="margin-top: 1rem;">이전으로</button>
                 </div>
-                
-                <div class="info">
-                    <strong>보스 난이도:</strong> 강한 보스일수록 더 많은 깨달음 수치를 제공합니다.
-                </div>
-            </section>
+            </div>
 
-            <!-- 깨달음 시스템 -->
-            <section id="sect8" class="section">
-                <h2 class="section-title">🧠 깨달음 시스템</h2>
+            <!-- 주문 완료 섹션 -->
+            <div id="success-section" class="section hidden">
+                <div class="section-header">
+                    ✅ 주문 완료
+                </div>
+                <div class="section-content">
+                    <div class="success-message">
+                        <h2>🎉 주문이 성공적으로 완료되었습니다!</h2>
+                        <p>주문번호: <strong id="order-number"></strong></p>
+                        <p>결제 확인 후 배송을 시작합니다.</p>
+                        <p>빠른 시일 내에 연락드리겠습니다.</p>
+                    </div>
+                    <button class="btn" onclick="resetOrder()" style="margin-top: 2rem;">새로운 주문하기</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 전역 변수
+        let cart = [];
+        let selectedPayment = 'bank';
+        let orderData = {};
+
+        // 상품 데이터
+        const products = [
+            { id: 1, name: "예시 1", price: 899000, emoji: "📱" },
+            { id: 2, name: "예시 2", price: 329000, emoji: "🎧" },
+            { id: 3, name: "예시 3", price: 1299000, emoji: "💻" },
+            { id: 4, name: "예시 4", price: 129000, emoji: "👟" },
+            { id: 5, name: "예시 5", price: 89000, emoji: "🔊" },
+            { id: 6, name: "예시 6", price: 45000, emoji: "🔌" },
+            { id: 7, name: "예시 7", price: 299000, emoji: "⌚" },
+            { id: 8, name: "예시 8", price: 159000, emoji: "⌨️" }
+        ];
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            displayProducts();
+            setupDragAndDrop();
+        });
+
+        // 상품 표시
+        function displayProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+            
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-image">${product.emoji}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${product.price.toLocaleString()}원</div>
+                        <button class="btn" onclick="addToCart(${product.id})">장바구니 담기</button>
+                    </div>
+                `;
+                grid.appendChild(productCard);
+            });
+        }
+
+        // 장바구니에 상품 추가
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            updateCartDisplay();
+            
+            // 성공 애니메이션
+            const btn = event.target;
+            btn.style.background = 'linear-gradient(135deg, #00b894 0%, #00a085 100%)';
+            btn.textContent = '담기 완료!';
+            setTimeout(() => {
+                btn.style.background = 'linear-gradient(135deg, #fd79a8 0%, #e84393 100%)';
+                btn.textContent = '장바구니 담기';
+            }, 1000);
+        }
+
+        // 장바구니 표시 업데이트
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            const orderBtn = document.getElementById('order-btn');
+            
+            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">장바구니가 비어있습니다.</p>';
+                cartTotal.classList.add('hidden');
+                orderBtn.style.display = 'none';
+                return;
+            }
+            
+            cartItems.innerHTML = '';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+                itemElement.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        <span style="color: #666;">${item.price.toLocaleString()}원 × ${item.quantity}개</span>
+                    </div>
+                    <div>
+                        <button onclick="changeQuantity(${item.id}, -1)" style="background: #ddd; border: none; padding: 5px 10px; margin-right: 10px; border-radius: 5px;">-</button>
+                        <button onclick="changeQuantity(${item.id}, 1)" style="background: #74b9ff; color: white; border: none; padding: 5px 10px; margin-right: 10px; border-radius: 5px;">+</button>
+                        <button onclick="removeFromCart(${item.id})" style="background: #fd79a8; color: white; border: none; padding: 5px 10px; border-radius: 5px;">삭제</button>
+                    </div>
+                `;
+                cartItems.appendChild(itemElement);
+                total += item.price * item.quantity;
+            });
+            
+            document.getElementById('total-amount').textContent = total.toLocaleString();
+            cartTotal.classList.remove('hidden');
+            orderBtn.style.display = 'block';
+        }
+
+        // 수량 변경
+        function changeQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    updateCartDisplay();
+                }
+            }
+        }
+
+        // 장바구니에서 상품 제거
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartDisplay();
+        }
+
+        // 섹션 표시/숨김
+        function showSection(sectionId) {
+            const sections = ['products-section', 'cart-section', 'order-section', 'payment-section', 'success-section'];
+            sections.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        function showProducts() {
+            showSection('products-section');
+        }
+
+        function showCart() {
+            showSection('cart-section');
+        }
+
+        function showOrderForm() {
+            if (cart.length === 0) {
+                alert('장바구니가 비어있습니다.');
+                return;
+            }
+            showSection('order-section');
+        }
+
+        // 결제 방법 선택
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        // 주문 폼 제출
+        document.getElementById('order-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            orderData = {
+                name: document.getElementById('customer-name').value,
+                phone: document.getElementById('customer-phone').value,
+                address: document.getElementById('customer-address').value,
+                payment: selectedPayment,
+                items: [...cart],
+                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+            };
+            
+            if (selectedPayment === 'bank') {
+                document.getElementById('payment-amount').textContent = orderData.total.toLocaleString();
+                showSection('payment-section');
+            } else {
+                // 다른 결제 방법의 경우 바로 완료 처리
+                completeOrder();
+            }
+        });
+
+        // 파일 업로드 처리
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const preview = document.getElementById('upload-preview');
+                preview.innerHTML = '';
                 
-                <div class="subsection">
-                    <h3 class="subsection-title">💡 깨달음의 핵심</h3>
-                    <div class="
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'preview-image';
+                    preview.appendChild(img);
+                } else if (file.type === 'application/pdf') {
+                    preview.innerHTML = `<p style="color: #00b894; margin-top: 1rem;">📄 ${file.name} 업로드 완료</p>`;
+                }
+                
+                preview.innerHTML += `<p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">파일명: ${file.name}</p>`;
+            }
+        }
+
+        // 드래그 앤 드롭 설정
+        function setupDragAndDrop() {
+            const uploadArea = document.querySelector('.upload-area');
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('receipt-upload').files = files;
+                    handleFileUpload({ target: { files: files } });
+                }
+            });
+        }
+
+        // 결제 확인 완료
+        function confirmPayment() {
+            const depositorName = document.getElementById('depositor-name').value;
+            const receiptFile = document.getElementById('receipt-upload').files[0];
+            
+            if (!depositorName) {
+                alert('입금자명을 입력해주세요.');
+                return;
+            }
+            
+            if (!receiptFile) {
+                alert('입금 확인 증빙서류를 업로드해주세요.');
+                return;
+            }
+            
+            orderData.depositorName = depositorName;
+            orderData.receiptFile = receiptFile.name;
+            
+            completeOrder();
+        }
+
+        // 주문 완료
+        function completeOrder() {
+            const orderNumber = 'KS' + Date.now();
+            document.getElementById('order-number').textContent = orderNumber;
+            
+            // 장바구니 초기화
+            cart = [];
+            updateCartDisplay();
+            
+            showSection('success-section');
+        }
+
+        // 주문 초기화
+        function resetOrder() {
+            // 폼 초기화
+            document.getElementById('order-form').reset();
+            document.getElementById('depositor-name').value = '';
+            document.getElementById('receipt-upload').value = '';
+            document.getElementById('upload-preview').innerHTML = '';
+            
+            // 결제 방법 초기화
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            document.querySelector('.payment-method[onclick="selectPayment(\'bank\')"]').classList.add('selected');
+            selectedPayment = 'bank';
+            
+            showProducts();
+        }
+    </script>
+</body>
+</html>
