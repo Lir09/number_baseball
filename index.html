@@ -443,282 +443,297 @@
         </div>
     </main>
 
-    <script>
-        // 전역 변수
-        let cart = [];
-        let selectedPayment = 'bank';
-        let orderData = {};
+    <script>// 전역 변수
+let cart = [];
+let selectedPayment = 'bank';
+let orderData = {};
 
-        // 상품 데이터
-        const products = [
-            { id: 1, name: "예시 1", price: 899000, emoji: "📱" },
-            { id: 2, name: "예시 2", price: 329000, emoji: "🎧" },
-            { id: 3, name: "예시 3", price: 1299000, emoji: "💻" },
-            { id: 4, name: "예시 4", price: 129000, emoji: "👟" },
-            { id: 5, name: "예시 5", price: 89000, emoji: "🔊" },
-            { id: 6, name: "예시 6", price: 45000, emoji: "🔌" },
-            { id: 7, name: "예시 7", price: 299000, emoji: "⌚" },
-            { id: 8, name: "예시 8", price: 159000, emoji: "⌨️" }
-        ];
+// 상품 데이터
+const products = [
+    { id: 1, name: "예시 1", price: 899000, emoji: "📱" },
+    { id: 2, name: "예시 2", price: 329000, emoji: "🎧" },
+    { id: 3, name: "예시 3", price: 1299000, emoji: "💻" },
+    { id: 4, name: "예시 4", price: 129000, emoji: "👟" },
+    { id: 5, name: "예시 5", price: 89000, emoji: "🔊" },
+    { id: 6, name: "예시 6", price: 45000, emoji: "🔌" },
+    { id: 7, name: "예시 7", price: 299000, emoji: "⌚" },
+    { id: 8, name: "예시 8", price: 159000, emoji: "⌨️" }
+];
 
-        // 페이지 로드 시 실행
-        document.addEventListener('DOMContentLoaded', function() {
-            displayProducts();
-            setupDragAndDrop();
-        });
+// 여기에 네 Google Apps Script 웹앱 URL 넣어줘!
+const scriptURL = 'https://script.google.com/macros/s/여기에_네_웹앱_ID_넣기/exec';
 
-        // 상품 표시
-        function displayProducts() {
-            const grid = document.getElementById('products-grid');
-            grid.innerHTML = '';
-            
-            products.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
-                productCard.innerHTML = `
-                    <div class="product-image">${product.emoji}</div>
-                    <div class="product-info">
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-price">${product.price.toLocaleString()}원</div>
-                        <button class="btn" onclick="addToCart(${product.id})">장바구니 담기</button>
-                    </div>
-                `;
-                grid.appendChild(productCard);
-            });
-        }
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', function() {
+    displayProducts();
+    setupDragAndDrop();
+});
 
-        // 장바구니에 상품 추가
-        function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            const existingItem = cart.find(item => item.id === productId);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ ...product, quantity: 1 });
-            }
-            
-            updateCartDisplay();
-            
-            // 성공 애니메이션
-            const btn = event.target;
-            btn.style.background = 'linear-gradient(135deg, #00b894 0%, #00a085 100%)';
-            btn.textContent = '담기 완료!';
-            setTimeout(() => {
-                btn.style.background = 'linear-gradient(135deg, #fd79a8 0%, #e84393 100%)';
-                btn.textContent = '장바구니 담기';
-            }, 1000);
-        }
+// 상품 표시
+function displayProducts() {
+    const grid = document.getElementById('products-grid');
+    grid.innerHTML = '';
+    
+    products.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card';
+        productCard.innerHTML = `
+            <div class="product-image">${product.emoji}</div>
+            <div class="product-info">
+                <div class="product-name">${product.name}</div>
+                <div class="product-price">${product.price.toLocaleString()}원</div>
+                <button class="btn" onclick="addToCart(${product.id})">장바구니 담기</button>
+            </div>
+        `;
+        grid.appendChild(productCard);
+    });
+}
 
-        // 장바구니 표시 업데이트
-        function updateCartDisplay() {
-            const cartCount = document.getElementById('cart-count');
-            const cartItems = document.getElementById('cart-items');
-            const cartTotal = document.getElementById('cart-total');
-            const orderBtn = document.getElementById('order-btn');
-            
-            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
-            
-            if (cart.length === 0) {
-                cartItems.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">장바구니가 비어있습니다.</p>';
-                cartTotal.classList.add('hidden');
-                orderBtn.style.display = 'none';
-                return;
-            }
-            
-            cartItems.innerHTML = '';
-            let total = 0;
-            
-            cart.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'cart-item';
-                itemElement.innerHTML = `
-                    <div>
-                        <strong>${item.name}</strong><br>
-                        <span style="color: #666;">${item.price.toLocaleString()}원 × ${item.quantity}개</span>
-                    </div>
-                    <div>
-                        <button onclick="changeQuantity(${item.id}, -1)" style="background: #ddd; border: none; padding: 5px 10px; margin-right: 10px; border-radius: 5px;">-</button>
-                        <button onclick="changeQuantity(${item.id}, 1)" style="background: #74b9ff; color: white; border: none; padding: 5px 10px; margin-right: 10px; border-radius: 5px;">+</button>
-                        <button onclick="removeFromCart(${item.id})" style="background: #fd79a8; color: white; border: none; padding: 5px 10px; border-radius: 5px;">삭제</button>
-                    </div>
-                `;
-                cartItems.appendChild(itemElement);
-                total += item.price * item.quantity;
-            });
-            
-            document.getElementById('total-amount').textContent = total.toLocaleString();
-            cartTotal.classList.remove('hidden');
-            orderBtn.style.display = 'block';
-        }
+// 장바구니에 상품 추가
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    const existingItem = cart.find(item => item.id === productId);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
+    
+    updateCartDisplay();
+    
+    // 성공 애니메이션
+    const btn = event.target;
+    btn.style.background = 'linear-gradient(135deg, #00b894 0%, #00a085 100%)';
+    btn.textContent = '담기 완료!';
+    setTimeout(() => {
+        btn.style.background = 'linear-gradient(135deg, #fd79a8 0%, #e84393 100%)';
+        btn.textContent = '장바구니 담기';
+    }, 1000);
+}
 
-        // 수량 변경
-        function changeQuantity(productId, change) {
-            const item = cart.find(item => item.id === productId);
-            if (item) {
-                item.quantity += change;
-                if (item.quantity <= 0) {
-                    removeFromCart(productId);
-                } else {
-                    updateCartDisplay();
-                }
-            }
-        }
+// 장바구니 표시 업데이트
+function updateCartDisplay() {
+    const cartCount = document.getElementById('cart-count');
+    const cartItems = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    const orderBtn = document.getElementById('order-btn');
+    
+    cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p style="text-align: center; padding: 2rem; color: #666;">장바구니가 비어있습니다.</p>';
+        cartTotal.classList.add('hidden');
+        orderBtn.style.display = 'none';
+        return;
+    }
+    
+    cartItems.innerHTML = '';
+    let total = 0;
+    
+    cart.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'cart-item';
+        itemElement.innerHTML = `
+            <div>
+                <strong>${item.name}</strong><br>
+                <span style="color: #666;">${item.price.toLocaleString()}원 × ${item.quantity}개</span>
+            </div>
+            <div>
+                <button onclick="changeQuantity(${item.id}, -1)" style="background: #ddd; border: none; padding: 5px 10px; margin-right: 10px; border-radius: 5px;">-</button>
+                <button onclick="changeQuantity(${item.id}, 1)" style="background: #74b9ff; color: white; border: none; padding: 5px 10px; margin-right: 10px; border-radius: 5px;">+</button>
+                <button onclick="removeFromCart(${item.id})" style="background: #fd79a8; color: white; border: none; padding: 5px 10px; border-radius: 5px;">삭제</button>
+            </div>
+        `;
+        cartItems.appendChild(itemElement);
+        total += item.price * item.quantity;
+    });
+    
+    document.getElementById('total-amount').textContent = total.toLocaleString();
+    cartTotal.classList.remove('hidden');
+    orderBtn.style.display = 'block';
+}
 
-        // 장바구니에서 상품 제거
-        function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
+// 수량 변경
+function changeQuantity(productId, change) {
+    const item = cart.find(item => item.id === productId);
+    if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+            removeFromCart(productId);
+        } else {
             updateCartDisplay();
         }
+    }
+}
 
-        // 섹션 표시/숨김
-        function showSection(sectionId) {
-            const sections = ['products-section', 'cart-section', 'order-section', 'payment-section', 'success-section'];
-            sections.forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            document.getElementById(sectionId).classList.remove('hidden');
+// 장바구니에서 상품 제거
+function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    updateCartDisplay();
+}
+
+// 섹션 표시/숨김
+function showSection(sectionId) {
+    const sections = ['products-section', 'cart-section', 'order-section', 'payment-section', 'success-section'];
+    sections.forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(sectionId).classList.remove('hidden');
+}
+
+function showProducts() {
+    showSection('products-section');
+}
+
+function showCart() {
+    showSection('cart-section');
+}
+
+function showOrderForm() {
+    if (cart.length === 0) {
+        alert('장바구니가 비어있습니다.');
+        return;
+    }
+    showSection('order-section');
+}
+
+// 결제 방법 선택
+function selectPayment(method) {
+    selectedPayment = method;
+    document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+    event.target.classList.add('selected');
+}
+
+// 주문 폼 제출
+document.getElementById('order-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    orderData = {
+        name: document.getElementById('customer-name').value,
+        phone: document.getElementById('customer-phone').value,
+        address: document.getElementById('customer-address').value,
+        payment: selectedPayment,
+        items: [...cart],
+        total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    };
+    
+    if (selectedPayment === 'bank') {
+        document.getElementById('payment-amount').textContent = orderData.total.toLocaleString();
+        showSection('payment-section');
+    } else {
+        // 다른 결제 방법의 경우 바로 완료 처리
+        completeOrder();
+    }
+});
+
+// 파일 업로드 처리
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const preview = document.getElementById('upload-preview');
+        preview.innerHTML = '';
+        
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.className = 'preview-image';
+            preview.appendChild(img);
+        } else if (file.type === 'application/pdf') {
+            preview.innerHTML = `<p style="color: #00b894; margin-top: 1rem;">📄 ${file.name} 업로드 완료</p>`;
         }
+        
+        preview.innerHTML += `<p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">파일명: ${file.name}</p>`;
+    }
+}
 
-        function showProducts() {
-            showSection('products-section');
+// 드래그 앤 드롭 설정
+function setupDragAndDrop() {
+    const uploadArea = document.querySelector('.upload-area');
+    
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            document.getElementById('receipt-upload').files = files;
+            handleFileUpload({ target: { files: files } });
         }
+    });
+}
 
-        function showCart() {
-            showSection('cart-section');
-        }
+// 결제 확인 완료
+function confirmPayment() {
+    const depositorName = document.getElementById('depositor-name').value;
+    const receiptFile = document.getElementById('receipt-upload').files[0];
+    
+    if (!depositorName) {
+        alert('입금자명을 입력해주세요.');
+        return;
+    }
+    
+    if (!receiptFile) {
+        alert('입금 확인 증빙서류를 업로드해주세요.');
+        return;
+    }
+    
+    orderData.depositorName = depositorName;
+    orderData.receiptFile = receiptFile.name;
+    
+    completeOrder();
+}
 
-        function showOrderForm() {
-            if (cart.length === 0) {
-                alert('장바구니가 비어있습니다.');
-                return;
-            }
-            showSection('order-section');
-        }
+// 주문 완료
+function completeOrder() {
+    const orderNumber = 'KS' + Date.now();
+    document.getElementById('order-number').textContent = orderNumber;
+    
+    // 주문 정보를 Google Apps Script에 전송하는 부분
+    fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors',  // 서버에서 CORS를 허용하지 않으면 no-cors
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+    })
+    .catch(err => {
+        console.log('데이터 전송 실패:', err);
+    });
+    
+    // 장바구니 초기화
+    cart = [];
+    updateCartDisplay();
+    
+    showSection('success-section');
+}
 
-        // 결제 방법 선택
-        function selectPayment(method) {
-            selectedPayment = method;
-            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-            event.target.classList.add('selected');
-        }
-
-        // 주문 폼 제출
-        document.getElementById('order-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            orderData = {
-                name: document.getElementById('customer-name').value,
-                phone: document.getElementById('customer-phone').value,
-                address: document.getElementById('customer-address').value,
-                payment: selectedPayment,
-                items: [...cart],
-                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-            };
-            
-            if (selectedPayment === 'bank') {
-                document.getElementById('payment-amount').textContent = orderData.total.toLocaleString();
-                showSection('payment-section');
-            } else {
-                // 다른 결제 방법의 경우 바로 완료 처리
-                completeOrder();
-            }
-        });
-
-        // 파일 업로드 처리
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const preview = document.getElementById('upload-preview');
-                preview.innerHTML = '';
-                
-                if (file.type.startsWith('image/')) {
-                    const img = document.createElement('img');
-                    img.src = URL.createObjectURL(file);
-                    img.className = 'preview-image';
-                    preview.appendChild(img);
-                } else if (file.type === 'application/pdf') {
-                    preview.innerHTML = `<p style="color: #00b894; margin-top: 1rem;">📄 ${file.name} 업로드 완료</p>`;
-                }
-                
-                preview.innerHTML += `<p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">파일명: ${file.name}</p>`;
-            }
-        }
-
-        // 드래그 앤 드롭 설정
-        function setupDragAndDrop() {
-            const uploadArea = document.querySelector('.upload-area');
-            
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.classList.add('dragover');
-            });
-            
-            uploadArea.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover');
-            });
-            
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.classList.remove('dragover');
-                
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    document.getElementById('receipt-upload').files = files;
-                    handleFileUpload({ target: { files: files } });
-                }
-            });
-        }
-
-        // 결제 확인 완료
-        function confirmPayment() {
-            const depositorName = document.getElementById('depositor-name').value;
-            const receiptFile = document.getElementById('receipt-upload').files[0];
-            
-            if (!depositorName) {
-                alert('입금자명을 입력해주세요.');
-                return;
-            }
-            
-            if (!receiptFile) {
-                alert('입금 확인 증빙서류를 업로드해주세요.');
-                return;
-            }
-            
-            orderData.depositorName = depositorName;
-            orderData.receiptFile = receiptFile.name;
-            
-            completeOrder();
-        }
-
-        // 주문 완료
-        function completeOrder() {
-            const orderNumber = 'KS' + Date.now();
-            document.getElementById('order-number').textContent = orderNumber;
-            
-            // 장바구니 초기화
-            cart = [];
-            updateCartDisplay();
-            
-            showSection('success-section');
-        }
-
-        // 주문 초기화
-        function resetOrder() {
-            // 폼 초기화
-            document.getElementById('order-form').reset();
-            document.getElementById('depositor-name').value = '';
-            document.getElementById('receipt-upload').value = '';
-            document.getElementById('upload-preview').innerHTML = '';
-            
-            // 결제 방법 초기화
-            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-            document.querySelector('.payment-method[onclick="selectPayment(\'bank\')"]').classList.add('selected');
-            selectedPayment = 'bank';
-            
-            showProducts();
-        }
+// 주문 초기화
+function resetOrder() {
+    // 폼 초기화
+    document.getElementById('order-form').reset();
+    document.getElementById('depositor-name').value = '';
+    document.getElementById('receipt-upload').value = '';
+    document.getElementById('upload-preview').innerHTML = '';
+    
+    // 결제 방법 초기화
+    document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+    document.querySelector('.payment-method[onclick="selectPayment(\'bank\')"]').classList.add('selected');
+    selectedPayment = 'bank';
+    
+    showProducts();
+}
     </script>
 </body>
 </html>
