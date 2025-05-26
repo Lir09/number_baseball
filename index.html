@@ -605,24 +605,52 @@ function selectPayment(method) {
     event.target.classList.add('selected');
 }
 
-// 주문 폼 제출
-document.getElementById('order-form').addEventListener('submit', function(e) {
+// 파일을 Base64로 변환하는 함수
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]); // base64 데이터만 추출
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// 주문 폼 제출 (async/await 사용)
+document.getElementById('order-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
+
+    const depositorName = document.getElementById('depositor-name').value;
+    const receiptFile = document.getElementById('receipt-upload').files[0];
+
+    let base64File = null;
+    let fileName = '';
+    let fileType = '';
+
+    if (receiptFile) {
+        base64File = await fileToBase64(receiptFile);
+        fileName = receiptFile.name;
+        fileType = receiptFile.type;
+    }
+
     orderData = {
         name: document.getElementById('customer-name').value,
         phone: document.getElementById('customer-phone').value,
         address: document.getElementById('customer-address').value,
         payment: selectedPayment,
         items: [...cart],
-        total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+        depositorName: depositorName || '',
+        receiptFile: {
+            name: fileName,
+            type: fileType,
+            data: base64File
+        }
     };
-    
+
     if (selectedPayment === 'bank') {
         document.getElementById('payment-amount').textContent = orderData.total.toLocaleString();
         showSection('payment-section');
     } else {
-        // 다른 결제 방법의 경우 바로 완료 처리
         completeOrder();
     }
 });
@@ -689,7 +717,11 @@ function confirmPayment() {
     }
     
     orderData.depositorName = depositorName;
-    orderData.receiptFile = receiptFile.name;
+    orderData.receiptFile = {
+      name: receiptFile.name,
+      type: receiptFile.type,
+      // data는 이미 orderData에 들어있으니 따로 안 넣음
+    };
     
     completeOrder();
 }
@@ -699,20 +731,21 @@ function completeOrder() {
     const orderNumber = 'KS' + Date.now();
     document.getElementById('order-number').textContent = orderNumber;
     
-    // 주문 정보를 Google Apps Script에 전송하는 부분
     fetch(scriptURL, {
         method: 'POST',
-        mode: 'no-cors',  // 서버에서 CORS를 허용하지 않으면 no-cors
+        mode: 'cors',  // CORS 설정에 따라 no-cors → cors로 변경 가능
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(orderData)
     })
+    .then(res => {
+        // 필요 시 응답 처리
+    })
     .catch(err => {
-        console.log('데이터 전송 실패:', err);
+        console.error('데이터 전송 실패:', err);
     });
     
-    // 장바구니 초기화
     cart = [];
     updateCartDisplay();
     
@@ -721,13 +754,11 @@ function completeOrder() {
 
 // 주문 초기화
 function resetOrder() {
-    // 폼 초기화
     document.getElementById('order-form').reset();
     document.getElementById('depositor-name').value = '';
     document.getElementById('receipt-upload').value = '';
     document.getElementById('upload-preview').innerHTML = '';
     
-    // 결제 방법 초기화
     document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
     document.querySelector('.payment-method[onclick="selectPayment(\'bank\')"]').classList.add('selected');
     selectedPayment = 'bank';
